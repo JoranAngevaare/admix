@@ -7,15 +7,17 @@ from . import logger
 
 try:
     db = DB()
-except:
-    print("DB initialization failed")
+    xent_runs_collection = xent_collection()
+    xent_context_collection = xent_collection('contexts')
+    xe1t_runs_collection = xe1t_collection()
+except Exception as e:
+    print(f"DB initialization failed, {e}")
     logger.warning(f"Initializing utilix DB failed. You cannot do database operations")
     db = None
+    xent_runs_collection = None
+    xent_context_collection = None
+    xe1t_runs_collection = None
 
-
-xent_runs_collection = xent_collection()
-xent_context_collection = xent_collection('contexts')
-xe1t_runs_collection = xe1t_collection()
 
 
 RAW_DTYPES = ['raw_records',

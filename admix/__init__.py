@@ -10,11 +10,12 @@ from utilix import uconfig
 def get_logger():
     logger = logging.getLogger("admix")
     ch = logging.StreamHandler()
-    ch.setLevel(uconfig.logging_level)
-    logger.setLevel(uconfig.logging_level)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    if uconfig is not None:
+        ch.setLevel(uconfig.logging_level)
+        logger.setLevel(uconfig.logging_level)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
     return logger
 
 logger = get_logger()
