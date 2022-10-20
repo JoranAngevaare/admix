@@ -146,7 +146,7 @@ def download(did, chunks=None, location='.',  tries=3, metadata=True,
             logger.debug(f"Download try #{_try} failed. Sleeping for {3*_try} seconds. Failure {e}")
             time.sleep(3 ** _try)
             _try += 1
-        finally:
+        else:
             success = True
 
     if success:
