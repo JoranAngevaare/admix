@@ -142,16 +142,17 @@ def download(did, chunks=None, location='.',  tries=3, metadata=True,
             rse = None
         try:
             result = download_dids(dids, base_dir=location, no_subdir=True, rse=rse, num_threads=num_threads)
-            success = True
-        except:
-            logger.debug(f"Download try #{_try} failed. Sleeping for {3*_try} seconds.")
+        except Exception as e:
+            logger.debug(f"Download try #{_try} failed. Sleeping for {3*_try} seconds. Failure {e}")
             time.sleep(3 ** _try)
             _try += 1
+        finally:
+            success = True
 
     if success:
         logger.debug(f"Download successful to {location}")
     else:
-        raise RucioDownloadError(f"Download of {did} failed")
+        raise RucioDownloadError(f"Download of {did} failed") from e
 
     downloaded_paths = [r['dest_file_paths'][0] for r in result]
     # return list of all files
