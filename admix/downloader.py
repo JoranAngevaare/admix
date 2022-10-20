@@ -8,6 +8,7 @@ from .utils import xe1t_runs_collection
 from .rucio import list_rules, get_did_type, get_rses
 from . import logger
 from . import clients
+import traceback
 try:
     from straxen import __version__
     straxen_version = __version__
@@ -136,23 +137,26 @@ def download(did, chunks=None, location='.',  tries=3, metadata=True,
         logger.info(f"Downloading {did} from {rse}")
 
     _try = 1
-    success = False
-    while _try <= tries and not success:
+    fail = True
+    while _try <= tries:
         if _try == tries:
+            # Try harder the last time
             rse = None
         try:
             result = download_dids(dids, base_dir=location, no_subdir=True, rse=rse, num_threads=num_threads)
         except Exception as e:
-            logger.debug(f"Download try #{_try} failed. Sleeping for {3*_try} seconds. Failure {e}")
+            fail = traceback.format_exc()
+            print(fail)
+            logger.info(f"Download try #{_try} failed. Sleeping for {3*_try} seconds. Failure {e}")
             time.sleep(3 ** _try)
             _try += 1
         else:
-            success = True
+            break
 
-    if success:
-        logger.debug(f"Download successful to {location}")
-    else:
-        raise RucioDownloadError(f"Download of {did} failed") from e
+    if fail:
+        raise RucioDownloadError(f"Download of {did} failed:\n\n{fail}")
+
+    logger.debug(f"Download successful to {location}")
 
     downloaded_paths = [r['dest_file_paths'][0] for r in result]
     # return list of all files
